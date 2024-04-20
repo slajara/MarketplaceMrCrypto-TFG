@@ -1,0 +1,39 @@
+{
+  "name": "create-t3-turbo",
+  "private": true,
+  "engines": {
+    "node": "v18.16.0"
+  },
+  "packageManager": "pnpm@8.6.0",
+  "scripts": {
+    "build": "turbo build",
+    "clean": "git clean -xdf node_modules",
+    "clean:workspaces": "turbo clean",
+    "wagmi:generate": "turbo wagmi:generate",
+    "db:generate": "turbo db:generate",
+    "db:push": "turbo db:push db:generate",
+    "db:studio": "pnpm -F db dev",
+    "dev": "turbo dev --parallel",
+    "format": "prettier --write \"**/*.{js,cjs,mjs,ts,tsx,md,json}\" --ignore-path .gitignore",
+    "lint": "turbo lint && manypkg check",
+    "lint:fix": "turbo lint:fix && manypkg fix",
+    "type-check": "turbo type-check"
+  },
+  "dependencies": {
+    "@acme/eslint-config": "^0.1.0",
+    "@apollo/client": "^3.7.16",
+    "@ianvs/prettier-plugin-sort-imports": "^4.0.2",
+    "@mantine/hooks": "^6.0.16",
+    "@manypkg/cli": "^0.20.0",
+    "@types/prettier": "^2.7.3",
+    "eslint": "^8.42.0",
+    "graphql": "^16.7.0",
+    "prettier": "^2.8.8",
+    "prettier-plugin-tailwindcss": "^0.3.0",
+    "react-hook-form": "^7.50.1",
+    "react-relay": "^15.0.0",
+    "trpc-openapi": "^1.2.0",
+    "turbo": "^1.10.1",
+    "typescript": "^5.1.3"
+  }
+}

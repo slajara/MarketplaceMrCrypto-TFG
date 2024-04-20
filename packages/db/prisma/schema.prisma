@@ -1,0 +1,129 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+    previewFeatures = ["jsonProtocol"]
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+model Account {
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? // @db.Text
+    access_token      String? // @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? // @db.Text
+    session_state     String?
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Session {
+    id           String   @id @default(cuid())
+    sessionToken String   @unique
+    userId       String
+    expires      DateTime
+    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+
+
+model VerificationToken {
+    identifier String
+    token      String   @unique
+    expires    DateTime
+
+    @@unique([identifier, token])
+}
+
+
+
+model User {
+  id           String @id @default(cuid())
+  address      String @unique
+  userName     String @unique @default("Unnamed")
+  description  String @default("Connecting with the community")
+  profileImage String @default("http://localhost:3000/mrc-unrevealed.jpg")
+  bannerImage  String @default("http://localhost:3000/mrc-unrevealed.jpg")
+  accounts     Account[]
+  sessions     Session[]
+  listings     Listing[]
+  sales        Sale[]
+}
+
+// A unique collection, MrCrypto
+model CollectionERC721 { 
+  owner         String @default("RacksLabs")
+  address       String @id
+  profileImage  String @default("https://i.seadn.io/gae/DLlX5UmkbyVEC0f0woGSrOJUc3yCK7TMI96bTuSdZO8DVHsLVzZdyfftQJOzMSUdz0mce1spA0wtZ67TIMdV1GDzESBdiCaQRaqcQA?auto=format&dpr=1&w=1920")
+  bannerImage   String @default("https://i.seadn.io/gae/P068MZ2IGVKuJVtXTutSEvTpeu_WMJzlpp1RodCZU-Os0KJ9ubJ5TO9JMJgYn6zpPIJrJuQEAWbSkgNXDyzt_tIYNhKopzPOKnmnNQ?auto=format&dpr=1&w=1920")
+  listings Listing[]
+}
+
+// Model for NFT standar ERC721 (MRC)
+model ERC721 {
+  id         Int       @id @default(autoincrement())
+  nftAddress String
+  name       String
+  imgUrl     String @default("hola")
+  edition    Int
+  tokenId    Int
+  listings   Listing[]
+  sales      Sale[]
+
+  @@unique([nftAddress, tokenId])
+  @@index([nftAddress, tokenId])
+}
+
+model Listing {
+  id                String @id @default(cuid())
+  nftAddress        String
+  tokenId           Int 
+  paytoken          String
+  price             Int
+  seller            String
+  status            String @default("LISTED")
+  timestamp         Int
+  collectionERC721  CollectionERC721? @relation(fields: [nftAddress], references: [address])
+  erc721            ERC721?     @relation(fields: [tokenId], references: [id])
+  user              User        @relation(fields: [seller], references: [address])
+
+  @@index([tokenId])
+}
+
+model Sale {
+  nftAddress  String
+  timestamp   Int
+  tokenId     Int
+  paytoken    String
+  price       Int
+  buyer       String
+  listingId   Int
+  nftId       Int
+  nft         ERC721  @relation(fields: [nftId], references: [id])
+  User        User?   @relation(fields: [userAddress], references: [address])
+  userAddress String?
+
+  @@id(fields: [nftAddress, tokenId, timestamp])
+}
+
+model E7LCollections {
+  id                    String @id @default(cuid())
+  collectionAddress     String @unique
+  collectionName        String @unique
+  collectionImage       String
+  banerImage            String
+
+  @@index([collectionAddress])
+}

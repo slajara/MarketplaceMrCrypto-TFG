@@ -1,0 +1,77 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "globalDependencies": [
+    "**/.env"
+  ],
+  "pipeline": {
+    "db:generate": {
+      "inputs": [
+        "prisma/schema.prisma"
+      ],
+      "cache": false
+    },
+    "db:push": {
+      "inputs": [
+        "prisma/schema.prisma"
+      ],
+      "cache": false
+    },
+    "wagmi:generate": {
+      "dependsOn": [
+        "compile",
+        "^wagmi:generate"
+      ],
+      "cache": false
+    },
+    "dev": {
+      "persistent": true,
+      "cache": false
+    },
+    "build": {
+      "dependsOn": [
+        "^build",
+        "^db:generate",
+        "wagmi:generate"
+      ],
+      "outputs": [
+        ".next/**",
+        ".expo/**"
+      ]
+    },
+    "compile": {},
+    "lint": {
+      "dependsOn": [
+        "wagmi:generate"
+      ]
+    },
+    "lint:fix": {},
+    "clean": {
+      "cache": false
+    },
+    "//#clean": {
+      "cache": false
+    },
+    "type-check": {
+      "dependsOn": [
+        "^db:generate",
+        "wagmi:generate"
+      ],
+      "cache": false
+    }
+  },
+  "globalEnv": [
+    "CI",
+    "DATABASE_URL",
+    "EXPO_ROUTER_APP_ROOT",
+    "NEXTAUTH_SECRET",
+    "NEXTAUTH_URL",
+    "NODE_ENV",
+    "SKIP_ENV_VALIDATION",
+    "VERCEL",
+    "VERCEL_URL",
+    "PROVIDER_URL_MUMBAI",
+    "PRIVATE_KEY",
+    "POLYGONSCAN_API_KEY",
+    "SESSION_SECRET"
+  ]
+}
